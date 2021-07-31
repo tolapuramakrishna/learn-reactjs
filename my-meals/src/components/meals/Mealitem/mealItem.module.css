@@ -1,0 +1,40 @@
+.meal-item{
+    padding: 1rem;
+    width: 24%;
+   
+}
+.card-body{
+    height: 300px; 
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    position: relative;
+}
+.card-body img{
+   margin: -0.5rem;
+   height: 150px;
+}
+.name{
+    margin: 0;
+    padding: .5rem .1rem;
+}
+.description{
+    font-size: 11px;
+    padding: .25rem .1rem;
+    height: 54px;
+}
+.price{
+    font-size: 18px;
+    color: #1d0961;
+    text-align: right;
+}
+.add-btn{
+    margin: 1rem 0;
+    width: 100%;
+    bottom: -3px;
+    position: absolute;
+    text-align: center;
+}
+.add-btn button{
+   width: 150px;
+}
