@@ -1,18 +1,23 @@
 import classes from "./mealItem.module.css";
 import Card from "../../UI/card";
 import item_img from "../../../assets/biryani.jpg";
-import { useContext } from "react";
-import CartContext from "../../../store/cart-context";
+// import { useContext } from "react";
+// import CartContext from "../../../store/cart-context";
+import { useDispatch } from "react-redux";
+import { cartActions } from "../../../store/redux/cart-slice";
+
 const MealItem = (props) => {
   const price = `$${props.meal.price.toFixed(2)}`;
-  const cartCtx=useContext(CartContext);
+  // const cartCtx=useContext(CartContext);
+  // const cartCtx = useSelector(state => state.cart)
+  const dispatch = useDispatch()
   const addItemHandler=(amount)=>{
-    cartCtx.addItem({
+    dispatch(cartActions.addItemsToCart({
       id:props.meal.id,
       name:props.meal.name,
       amount:amount,
       price:props.meal.price
-    })
+    }))
   }
   return (
     <li className={classes["meal-item"]}>
