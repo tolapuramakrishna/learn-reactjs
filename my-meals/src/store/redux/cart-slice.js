@@ -1,10 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { uiActions } from './ui-slice';
 
-const intialCart = { items: [], totalPrice: 0, totalQuantity: 0 ,cartChange:false}
+const initialCart = { items: [], totalPrice: 0, totalQuantity: 0, cartChange: false }
 const cartSlice = createSlice({
     name: 'cart',
-    initialState: intialCart,
+    initialState: initialCart,
     reducers: {
         replaceCart(state, action) {
             state.totalQuantity = action.payload.totalQuantity;
@@ -16,7 +16,7 @@ const cartSlice = createSlice({
             const existingItem = state.items.find(item => item.id === newItem.id)
             state.totalQuantity++;
             state.totalPrice = state.totalPrice + newItem.price;
-            state.cartChange=true;
+            state.cartChange = true;
             if (existingItem) {
                 existingItem.quantity++;
                 existingItem.totalPrice = existingItem.totalPrice + newItem.price;
@@ -35,7 +35,7 @@ const cartSlice = createSlice({
             const existingItem = state.items.find(item => item.id === id)
             state.totalQuantity--;
             state.totalPrice = state.totalPrice - existingItem.price;
-            state.cartChange=true;
+            state.cartChange = true;
             if (existingItem.quantity === 1) {
                 state.items = state.items.filter((item) => item.id !== id);
             } else {
@@ -50,9 +50,11 @@ export const saveCart = (cart) => {
         const saveCart = async () => {
             const response = await fetch('https://react-d5572-default-rtdb.asia-southeast1.firebasedatabase.app/cart/user1.json', {
                 method: 'PUT',
-                body: JSON.stringify({  items: cart.items,
+                body: JSON.stringify({
+                    items: cart.items,
                     totalQuantity: cart.totalQuantity,
-                    totalPrice: cart.totalPrice})
+                    totalPrice: cart.totalPrice
+                })
             })
             if (!response.ok) {
                 throw new Error('Sending cart data failed.');
@@ -63,7 +65,6 @@ export const saveCart = (cart) => {
         // debounce
         try {
             await saveCart()
-
             dispatch(
                 uiActions.showNotification({
                     status: 'success',

@@ -24,7 +24,7 @@ const Checkout = (props) => {
     const localityRef = useRef();
     const cityRef = useRef();
 
-    const submitHandeler = (event) => {
+    const submitHandler = (event) => {
         event.preventDefault();
         const form = {
             name: nameRef.current.value,
@@ -68,7 +68,7 @@ const Checkout = (props) => {
         return `${classes.control} ${isValid ? '' : classes.invalid}`;
     }
 
-    return <form onSubmit={submitHandeler} className={classes.form}>
+    return <form onSubmit={submitHandler} className={classes.form}>
         <div className={inValidCss(formValidity.name)}>
             <label htmlFor="name">Name</label>
             <input type="text" id="name" ref={nameRef} />

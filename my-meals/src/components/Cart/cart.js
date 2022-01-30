@@ -9,7 +9,7 @@ import { cartActions } from "../../store/redux/cart-slice";
 
 const Cart = (props) => {
   const [showCheckout, setShowCheckout] = useState(false)
-  const [isError, setisError] = useState(false)
+  const [isError, setIsError] = useState(false)
   const [orderSuccess, setOrderSuccess] = useState(false)
 
   const cart = useSelector(state => state.cart)
@@ -22,7 +22,7 @@ const Cart = (props) => {
   const removeItemHandler = (id) => {
     dispatch(cartActions.removeFromCart(id));
   };
-  const onOrderHanderler = () => {
+  const onOrderHandler = () => {
     setShowCheckout(true)
   };
 
@@ -37,7 +37,7 @@ const Cart = (props) => {
       })
     })
     if (!resp.ok) {
-      setisError(true);
+      setIsError(true);
       return
     }
     setOrderSuccess(true)
@@ -69,7 +69,7 @@ const Cart = (props) => {
           Close
         </button>
         {hasItems && (
-          <button className={classes.button} onClick={onOrderHanderler}>
+          <button className={classes.button} onClick={onOrderHandler}>
             Order
           </button>
         )}
@@ -103,6 +103,8 @@ const Cart = (props) => {
   );
 };
 export default Cart
+
+
 // const Cart = (props) => {
 //   const [showCheckout, setShowCheckout] = useState(false)
 //   const [isError, setisError] = useState(false)

@@ -55,10 +55,12 @@ function App() {
         })
       );
     })
-*/
-    //2nd way
+    */
+
+    //###2nd way
     if(cart.cartChange)
       dispatch(saveCart(cart))
+    
   }, [cart, dispatch])
 
   const showCartHandler = () => {
@@ -74,6 +76,7 @@ function App() {
   const closeNotification = () => {
     dispatch(uiActions.hideNotification())
   }
+  
   /* If we use redux */
   return (
     <Fragment>
@@ -94,8 +97,8 @@ function App() {
   )
 
   /* If we use react context & provider */
-  // return (
 
+  // return (
   //   <CartProvider>
   //     {isCartShown && <Cart onCartClose={hideCartHandler} />}
   //     <Header onCartShow={showCartHandler} />
