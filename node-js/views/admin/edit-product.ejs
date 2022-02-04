@@ -7,7 +7,7 @@
         <%- include('../shared/navigation.ejs') %>
             <main>
                 <form class="product-form"
-                    action="/admin/<% if (editable) { %> update-product <% } else { %> add-product <% } %>"
+                    action="/admin/<% if (editable) { %>update-product<% } else { %>add-product<% } %>"
                     method="POST">
                     <div class="form-control">
                         <label for="title">Title</label>

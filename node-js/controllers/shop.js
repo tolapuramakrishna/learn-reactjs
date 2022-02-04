@@ -2,13 +2,15 @@ const Product = require('../models/product');
 const Cart = require('../models/cart');
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll(products => {
+  Product.fetchAll()
+  .then(([rows, fields]) => {
     res.render('shop/product-list', {
-      prods: products,
+      prods: rows,
       pageTitle: 'All Products',
       path: '/products'
     });
-  });
+  })
+  .catch(err => console.log(err))
 };
 
 exports.getProductById = (req, res, next) => {
@@ -24,34 +26,42 @@ exports.getProductById = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
-  Product.fetchAll(products => {
+  Product.fetchAll()
+  .then(([rows, fields]) => {
     res.render('shop/index', {
-      prods: products,
+      prods: rows,
       pageTitle: 'Shop',
       path: '/'
     });
-  });
+  })
+  .catch(err => console.log(err))
+ 
 };
 
 exports.addToCart = (req, res, next) => {
   const prodId = req.body.productId
   Product.getById(prodId, product => {
     console.log(product)
-    if(product) {
+    if (product) {
       Cart.addToCart(prodId, product.price)
       res.redirect('/cart');
+    } else {
+      res.statusCode(401).send('invalid data')
     }
-    res.statusCode(401).send('invalid data')
   })
 }
 
 exports.getCart = (req, res, next) => {
   Cart.getCart((cart) => {
-    res.render('shop/cart', {
-      path: '/cart',
-      pageTitle: 'Your Cart',
-      cart: cart
-    });
+    Product.fetchAll(prods => {
+      const cartProds = cart.products.map(p => { return { ...prods.find(prod => p.id === prod.id), qty: p.qty } })
+      cart.products = cartProds
+      res.render('shop/cart', {
+        path: '/cart',
+        pageTitle: 'Your Cart',
+        cart: cart
+      });
+    })
   })
 };
 

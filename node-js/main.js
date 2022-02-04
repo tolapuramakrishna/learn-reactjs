@@ -16,6 +16,6 @@ app.use(shopRoutes)
 app.use(express.static(path.join(__dirname, 'public')))
 app.use((req, res) => {
     // req.query
-    res.status(404).render('404', {pageTitle: 'Page Not Found'})
+    res.status(404).render('404', {pageTitle: 'Page Not Found' , path: '404'})
 })
 app.listen(3000)

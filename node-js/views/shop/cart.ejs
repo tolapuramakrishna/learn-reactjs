@@ -5,7 +5,12 @@
         <%- include('../shared/navigation.ejs') %>
         <main>
             <ul>
-                <!-- <% cart.pr%> -->
+                <% cart.products.forEach(prod => {%>
+                    <li>
+                        <p><%=prod.title %> x <%=prod.qty%></p>
+                    </li>
+                <%})%>
             </ul>
+            <p>Total: <%=cart.totalPrice%></p>
         </main>
         <%- include('../shared/end.ejs') %>
