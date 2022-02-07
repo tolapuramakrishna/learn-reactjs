@@ -1,21 +1,53 @@
-const express = require('express')
-const bodyParser = require('body-parser')
-const path = require('path')
+const express = require("express");
+const bodyParser = require("body-parser");
+const path = require("path");
 
-const app = express()
-app.use(bodyParser.urlencoded({ extended: false }))
+const app = express();
+app.use(bodyParser.urlencoded({ extended: false }));
 
-app.set('view engine', 'ejs')
-app.set('views', 'views')
-const adminData = require('./routes/admin')
-const shopRoutes = require('./routes/shop')
+const db = require("./util/database");
+const Product = require("./models/product");
+const User = require("./models/user");
 
+app.set("view engine", "ejs");
+app.set("views", "views");
+const adminData = require("./routes/admin");
+const shopRoutes = require("./routes/shop");
 
-app.use('/admin', adminData.router)
-app.use(shopRoutes)
-app.use(express.static(path.join(__dirname, 'public')))
+app.use((req, res, next) => {
+  User.findByPk(1)
+    .then((user) => {
+      req.user = user;
+      next();
+    })
+    .catch((err) => console.log("error while setting user req"));
+});
+
+app.use("/admin", adminData.router);
+app.use(shopRoutes);
+app.use(express.static(path.join(__dirname, "public")));
 app.use((req, res) => {
-    // req.query
-    res.status(404).render('404', {pageTitle: 'Page Not Found' , path: '404'})
-})
-app.listen(3000)
+  // req.query
+  res.status(404).render("404", { pageTitle: "Page Not Found", path: "404" });
+});
+
+Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
+// user.hasMany(product) // same as above
+db
+  // .sync({ force: true })
+  .sync()
+  .then(() => {
+    return User.findByPk(1);
+  })
+  .then((user) => {
+    if (!user) {
+      User.create({ name: "test", email: "test@test.com" });
+    }
+    return user;
+  })
+  .then((res) => {
+    app.listen(3000);
+  })
+  .catch((err) => {
+    console.log("error at starting");
+  });

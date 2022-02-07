@@ -1,38 +1,65 @@
-const db = require('../util/database');
+const { Sequelize, DataTypes } = require("sequelize");
 
-const Cart = require('./cart');
+const sequelize = require("../util/database");
 
-module.exports = class Product {
-  constructor(id, title, imageUrl, description, price) {
-    this.id = id;
-    this.title = title;
-    this.imageUrl = imageUrl;
-    this.description = description;
-    this.price = price;
-  }
+const Product = sequelize.define("product", {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    allowNull: false,
+    primaryKey: true,
+  },
+  title: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  imageUrl: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  price: {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  description: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+});
 
-  save() {
+module.exports = Product;
 
-  }
+// const db = require("../util/database").default;
+// const Cart = require("./cart");
 
-  static deleteById(id) {
+// module.exports = class Product {
+//   constructor(id, title, imageUrl, description, price) {
+//     this.id = id;
+//     this.title = title;
+//     this.imageUrl = imageUrl;
+//     this.description = description;
+//     this.price = price;
+//   }
 
-  }
+//   save() {
+//     return db.execute(
+//       "INSERT into products (title,imageUrl,description,price) values (?, ? , ? ,?)",
+//       [this.title, this.imageUrl, this.description, this.price]
+//     );
+//   }
 
-  static fetchAll() {
-    return db.execute('SELECT * FROM products')
-    
-  }
+//   static deleteById(id) {}
 
-  static getById(id) {
+//   static fetchAll() {
+//     return db.execute("SELECT * FROM products");
+//   }
 
-  }
-};
+//   static getById(id) {}
+// };
 
-
-
-
+// ####
 /* // with json file 
+
 const fs = require('fs');
 const path = require('path');
 const Cart = require('./cart');
