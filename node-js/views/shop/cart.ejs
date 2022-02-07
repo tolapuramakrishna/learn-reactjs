@@ -1,16 +1,26 @@
 <%- include('../shared/head.ejs') %>
+    <link rel="stylesheet" href="/css/product.css">
     </head>
 
     <body>
         <%- include('../shared/navigation.ejs') %>
-        <main>
-            <ul>
-                <% cart.products.forEach(prod => {%>
-                    <li>
-                        <p><%=prod.title %> x <%=prod.qty%></p>
-                    </li>
-                <%})%>
-            </ul>
-            <p>Total: <%=cart.totalPrice%></p>
-        </main>
-        <%- include('../shared/end.ejs') %>
+            <main>
+                <% if(products.length===0) { %>
+                    <h1>Nothing there!</h1>
+                    <% } else { %>
+                        <ul class="cart-block">
+                            <% products.forEach(prod=> {%>
+                                <li>
+                                    <p>
+                                        <%=prod.title %> x <%=prod.cartItem.quantity%>
+                                    </p>
+                                    <button class="btn">Delete</button>
+                                </li>
+                                <%})%>
+                        </ul>
+                        <form action="/create-order" method="post">
+                            <button class="btn" type="submit">Order Now</button>
+                        </form>
+                        <% } %>
+            </main>
+            <%- include('../shared/end.ejs') %>
