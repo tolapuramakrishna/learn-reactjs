@@ -1,9 +1,7 @@
 const express = require('express');
-const path = require('path');
 const adminController = require('../controllers/admin');
 const router = express.Router();
 
-const products = []
 // /admin/add-product => GET
 router.get('/add-product', adminController.getAddProduct);
 
@@ -17,4 +15,3 @@ router.post('/delete-product', adminController.deleteProduct);
 router.get('/edit-product/:productId', adminController.getEditProduct);
 
 exports.router = router
-exports.products = products

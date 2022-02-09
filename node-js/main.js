@@ -5,32 +5,52 @@ const path = require("path");
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 
-const { mongoConnect } = require("./util/database");
+const mongoose = require("mongoose");
+
 const User = require("./models/user");
 const adminData = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
+const authRoutes = require("./routes/auth");
 
 app.set("view engine", "ejs");
 app.set("views", "views");
 
 app.use((req, res, next) => {
-  User.findById("620248af163a0a09e7922655")
+  User.findById("6203695f6904084a796a2354")
     .then((user) => {
-      req.user = new User(user.name, user.email, user.cart, user._id);
+      req.user = user;
       next();
     })
     .catch((err) => console.log("error while setting user req"));
 });
 
 app.use("/admin", adminData.router);
+app.use(authRoutes);
 app.use(shopRoutes);
+
 app.use(express.static(path.join(__dirname, "public")));
+
 app.use((req, res) => {
-  // req.query
   res.status(404).render("404", { pageTitle: "Page Not Found", path: "404" });
 });
 
-mongoConnect(() => {
-  console.log("mongoDB connected");
-  app.listen(3000);
-});
+mongoose
+  .connect(
+    "mongodb+srv://ramakrishna:jH22J58mrH9a7ZR@nodejs-learning.mcpws.mongodb.net/shop?retryWrites=true&w=majority"
+  )
+  .then(() => {
+    return User.find().then((user) => {
+      if (!user) {
+        const user = new User({
+          name: "ram",
+          email: "ram@test.com",
+          cart: { items: [] },
+        });
+        return user.save();
+      }
+    });
+  })
+  .then(() => {
+    console.log("mongoDB connected");
+    app.listen(3000);
+  });
