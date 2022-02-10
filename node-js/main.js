@@ -1,7 +1,11 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
 
+const MONGO_URI =
+  "mongodb+srv://ramakrishna:jH22J58mrH9a7ZR@nodejs-learning.mcpws.mongodb.net/shop";
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -15,8 +19,26 @@ const authRoutes = require("./routes/auth");
 app.set("view engine", "ejs");
 app.set("views", "views");
 
+
+
+app.use(express.static(path.join(__dirname, "public")));
+app.use(
+  session({
+    secret: "secret-key",
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: MONGO_URI,
+      collectionName: "sessions",
+    }),
+  })
+);
+
 app.use((req, res, next) => {
-  User.findById("6203695f6904084a796a2354")
+  if(!req.session.user) {
+    return next()
+  }
+  User.findById(req.session.user._id)
     .then((user) => {
       req.user = user;
       next();
@@ -28,16 +50,13 @@ app.use("/admin", adminData.router);
 app.use(authRoutes);
 app.use(shopRoutes);
 
-app.use(express.static(path.join(__dirname, "public")));
 
 app.use((req, res) => {
   res.status(404).render("404", { pageTitle: "Page Not Found", path: "404" });
 });
 
 mongoose
-  .connect(
-    "mongodb+srv://ramakrishna:jH22J58mrH9a7ZR@nodejs-learning.mcpws.mongodb.net/shop?retryWrites=true&w=majority"
-  )
+  .connect(MONGO_URI)
   .then(() => {
     return User.find().then((user) => {
       if (!user) {
