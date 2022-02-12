@@ -1,26 +1,104 @@
 const User = require("../models/user");
+const bcrypt = require("bcrypt");
+
+const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(
+  "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"
+);
+const msg = {
+  to: "ram2rakhi@gmail.com", // Change to your recipient
+  from: "ramakrishnatolapu.dev@gmail.com", // Change to your verified sender
+  subject: "Sending with SendGrid is Fun",
+  text: "and easy to do anywhere, even with Node.js",
+  html: "<strong>and easy to do anywhere, even with Node.js</strong>",
+};
 
 exports.login = (req, res, next) => {
-  console.log(req.session.isLoggedIn);
-  res.render("auth/login", {
-    pageTitle: "Login",
-    path: "/login",
-    isLoggedIn: req.session.isLoggedIn,
+  let message = req.flash('error');
+  if (message.length > 0) {
+    message = message[0];
+  } else {
+    message = null;
+  }
+  res.render('auth/login', {
+    path: '/login',
+    pageTitle: 'Login',
+    errorMessage: message
   });
 };
 
 exports.postLogin = (req, res, next) => {
-  User.findById("6203695f6904084a796a2354")
+  const email = req.body.email;
+  const password = req.body.password;
+
+  User.findOne({ email: email })
     .then((user) => {
-      req.session.isLoggedIn = true;
-      req.session.user = user;
-      res.redirect("/");
+      if (!user) {
+        req.flash('error', 'email or password not valid')
+        return res.redirect("/login");
+      }
+      return bcrypt.compare(password, user.password).then((match) => {
+        if (match) {
+          req.session.isLoggedIn = true;
+          req.session.user = user;
+          return req.session.save(()=>{
+            res.redirect("/");
+          })
+        } else {
+          req.flash('error', 'email or password not valid')
+          res.redirect("/login");
+        }
+      });
     })
-    .catch((err) => console.log("error while setting user req"));
+    .catch((err) => console.log(err));
 };
 
 exports.postLogout = (req, res, next) => {
   req.session.destroy((err) => {
     res.redirect("/");
   });
+};
+
+exports.signup = (req, res, next) => {
+  let message = req.flash('error');
+  if (message.length > 0) {
+    message = message[0];
+  } else {
+    message = null;
+  }
+  res.render("auth/signup", {
+    pageTitle: "signup",
+    path: "/signup",
+    errorMessage: message,
+  });
+};
+
+exports.postSignup = (req, res, next) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const confirmPassword = req.body.confirmPassword;
+  User.findOne({ email: email })
+    .then((user) => {
+      if (user) {
+        req.flash('error', 'E-Mail exists already, please pick a different one.');
+        return res.redirect("/signup");
+      } else {
+        bcrypt
+          .hash(password, 12)
+          .then((pwd) => {
+            const user = new User({
+              email,
+              password: pwd,
+              cart: { items: [] },
+            });
+            return user.save();
+          })
+          .then(() => {
+            res.redirect("/login");
+            return sgMail.send(msg)
+          })
+          .catch((err) => console.log(err));
+      }
+    })
+    .catch((err) => console.log(err));
 };
