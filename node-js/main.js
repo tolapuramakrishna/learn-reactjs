@@ -40,21 +40,37 @@ app.use((req, res, next) => {
       req.user = user;
       next();
     })
-    .catch((err) => console.log("error while setting user req"));
+    .catch((err) => {
+      const error = new Error(err)
+      error.statusCode = 500;
+      next(error);
+    });
 });
 
 app.use((req, res, next) => {
   res.locals.isLoggedIn = req.session.isLoggedIn; // we need not add in every render method
   next();
 });
-app.use(flash());
+
+app.use(flash()); 
 
 app.use("/admin", adminData.router);
 app.use(authRoutes);
 app.use(shopRoutes);
 
+app.use("/500", (req, res) => {
+  res.status(500).render("500", { pageTitle: "Server error", path: "500" });
+});
+
 app.use((req, res) => {
   res.status(404).render("404", { pageTitle: "Page Not Found", path: "404" });
+});
+
+// common error handler
+app.use((error, req, res, next) => {
+  res
+    .status(error.statusCode)
+    .render("500", { pageTitle: "Server error", path: "500" });
 });
 
 mongoose.connect(MONGO_URI).then(() => {
